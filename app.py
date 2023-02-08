@@ -24,7 +24,6 @@ sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
 @app.route('/')
 def home():
-
     return render_template('main.html')
 
 
@@ -64,18 +63,12 @@ def search_results():
 
 
 @app.route("/search_results", methods=["GET"])
-
-
-
 def playlist_get():
     playlist = list(db.search_results.find({}, {'_id': False}).sort([('timestamp', -1)]).limit(10))
     return jsonify({'track': playlist})
 
 
 @app.route("/selected_tracks", methods=["POST"])
-
-
-
 def selected_track_post():
     selected_track_receive = request.form['select_track']
     selected_artists_receive = request.form['select_artists']

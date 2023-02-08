@@ -318,7 +318,6 @@
 
     <script>
         $(document).ready(function () {
-            $('#discription').hide();
             $('#search_button').click(function (event) {
 
                 event.preventDefault();
@@ -370,6 +369,7 @@
 
     <script>
         $(document).ready(function () {
+            $('.popup_add_song').hide();
             getTracks()
         })
 
@@ -380,7 +380,6 @@
                 url: "/search_results",
                 data: {},
                 success: function (response) {
-                    console.log(response)
                     let tracks = response.track;
                     tracks.sort((a, b) => b.timestamp - a.timestamp);
                     let tracksList = $("#tracks-list");
@@ -394,7 +393,7 @@
                                             <div class="card-body">
                                                 <h5 class="card-title" id="track_result">${track.track}</h5>
                                                 <div class="position-absolute bottom-0 end-0">
-                                                    <button type="button" id="select" class="btn btn-light" onclick="select_track(this)">🥄</button>
+                                                    <button type="button" id="select" class="btn btn-light" onclick="select_track(this)"><i class="fa-solid fa-spoon" style="transform: scaleX(-1);"></i></button>
                                                 </div>
                                                 <div>
                                                     <button onclick="preview_play(this.nextElementSibling)" style="border:0; outline:0; background-color:transparent;">
@@ -420,11 +419,11 @@
                                             <div class="card-body">
                                                 <h5 class="card-title" id="track_result">${track.track}</h5>
                                                 <div class="position-absolute bottom-0 end-0">
-                                                    <button type="button" id="select" class="btn btn-light" onclick="select_track(this)">🥄</button>
+                                                    <button type="button" id="select" class="btn btn-light" onclick="select_track(this)"><i class="fa-solid fa-spoon fa-2x" style="transform: scaleX(-1);"></i></button>
                                                 </div>
                                                 <div>
                                                     <button onclick="preview_play(this.nextElementSibling)" style="border:0; outline:0; background-color:transparent;">
-                                                        <i class="fa-brands fa-spotify" ></i>
+                                                        <i class="fa-brands fa-spotify fa-2x" ></i>
                                                     </button>
                                                     <audio id="play">
                                                         <source src=${track.url} type="audio/mpeg">
@@ -444,7 +443,6 @@
 
     </script>
     <script>
-
         function select_track(button) {
             let selected_track = $(button).closest(".card").find("#track_result").text();
             let selected_artists = $(button).closest(".card").find("#artists_result").text();
@@ -456,68 +454,67 @@
                 success: function (response) {
 
                 },
-
             });
-        }
 
+            document.getElementById('popup').style.display = 'block';
+            let closeButton = document.getElementById("popupClose");
+            let popupWindow = document.getElementById("popup");
+            button.addEventListener("click", function () {
+                popupWindow.style.display = "block";
+            })
+            closeButton.addEventListener("click", function () {
+                popupWindow.style.display = "none";
+            })
+        }
     </script>
 
-<!-- 카드(부미) -->
+
     <script>
         $(document).ready(function () {
-            selected_tracks();
+            selected_trackLists();
         });
 
-        function selected_tracks() {
+        function selected_trackLists() {
             $.ajax({
                 type: 'GET',
                 url: '/selected_tracks',
                 data: {},
                 success: function (response) {
-                     let tracks = response.track;
-                     let selected_tracksList = `<div className="col-sd-4">
-                            <div className="cards" id="songs_time">
-                                <div className="card">
-                                    <img src="${tracks.image}" alt="Track Image" style="height:100%;">
-                                        <div className="card-body">
-                                            <h5 className="card-title" id="selected_tracks">${tracks.track}</h5>
-                                            <p className="count">${tracks.count}명이 듣고 있어요</p>
-                                        </div>
-                                        <div>
-                                            <button onClick="preview_play(this.nextElementSibling)"
-                                                    style="border:0; outline:0; background-color:transparent;">
-                                                <i className="fa-brands fa-spotify"></i>
-                                            </button>
-                                            <audio id="play">
-                                                <source src=${tracks.url} type="audio/mpeg">
-                                            </audio>
-                                        </div>
-                                </div>
-                                <div className="card-footer">
-                                    <p className="card-text">${tracks.artist}</p>
-                                    <button className="likes">
-                                        <img src="/ic_heart.svg" alt="">
+                    let selectedTracks = response.selected_track;
+                    let top1Track = selectedTracks.slice(0, 1);
+                    top1Track.forEach(function (selected_track) {
+                        let selected_trackList = `<div class="col-sd-4">
+                            <div class="cards" id="songs_time">
+                                <div classe="card">
+                                    <div class="card-body">
+                                        <img src="${selected_track.image}" alt="Track Image" style="height:100%;">
+                                            <h5 class="card-title" id="selected_tracks">${selected_track.track}</h5>
+                                            <p class="count">${selected_track.count}명이 듣고 있어요</p>
+                                    </div>
+                                    <div class="card-footer">
+                                        <p class="card-text">${selected_track.artist}</p>
+                                        <button class="likes">
+                                        <i class="fa-solid fa-heart fa-3x"></i>
                                             <strong>0</strong>
-                                    </button>
-                                    <a href="" className="preview_url">재생하기</a>
+                                        </button>
+                                         <button onClick="preview_play(this.nextElementSibling)"
+                                                    style="border:0; outline:0; background-color:transparent;">
+                                                <i class="fa-brands fa-spotify fa-3x"></i>
+                                         </button>
+                                         <audio id="play">
+                                             <source src=${selected_track.url} type="audio/mpeg">
+                                         </audio>
+                                    </div>
                                 </div>
                             </div>`
 
-                    $('#cards-box').append(selected_tracksList)
-                    console.log(response['selected_tracks'])
-                }
+                        $('#cards-box').prepend(selected_trackList)
+                    })
+                },
             })
         }
 
-
-
     </script>
-
-<!-- 라이크(우현) -->
-
-
-
-
 
     <script>
         const btns_like = document.querySelectorAll('.songs_time .card .likes')
@@ -530,19 +527,7 @@
             })
         })
     </script>
-    <script>
-        $(document).ready(function () {
 
-            $('.popup_add_song').hide();
-            $("#select").on('click', function () {
-                $('.popup_add_song').show();
-            })
-
-            $('.popup_add_song .btn_close').on('click', function () {
-                $('.popup_add_song').hide();
-            })
-        })
-    </script>
 
 </head>
 
@@ -586,7 +571,7 @@
 
                 <br>
                 <img id="description"
-                     src="/static/description.png"
+                     src="./static/img/description_img.png"
                      style="display: none; margin:15px; min-width: 288px; max-width: 75%; ">
             </center>
         </div>
@@ -595,14 +580,6 @@
     <!-- 슬라이드(박드림님)-->
     <div class="carousel-container">
         <div id="carouselExampleIndicators" class="carousel slide">
-
-            <!--<div class="carousel-indicators">
-                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0"
-                        class="active"
-                        aria-current="true" aria-label="Slide 1"></button>
-                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"
-                        aria-label="Slide 2"></button>
-            </div>-->
             <div class="container-fluid">
                 <div class="carousel-inner">
                     <div class="carousel-item active">
@@ -630,12 +607,12 @@
         </div>
     </div>
 
-    <div class="popup_add_song" style="display: none;">
+    <div class="popup_add_song" id="popup" style="display: none;">
         <div class="contents">
-            <button class="btn_close">
-                <img src="../img/ic_close.svg" alt="닫기버튼">
+            <button class="btn_close" id="popupClose" onclick="selected_trackLists()">
+                <i class="fa-solid fa-x"></i>
             </button>
-            <img src="../img/img_bibimbap.svg" alt="비빔밥 이미지">
+            <i class="fa-solid fa-bowl-food fa-9x" style="margin: 10px;"></i>
             <p><strong>Playlist</strong> 비빔밥에 노래가 담겼어요.</p>
         </div>
     </div>
@@ -644,14 +621,18 @@
     <!-- 하단 시간별 노래(곽부미님), 좋아요 재생하기(박우현님)-->
 
 
-
-<!-- 하단 시간별 노래(곽부미님), 좋아요 재생하기(박우현님)-->
-
+    <div class="songs_time">
+        <h1>
+            <b>오후 1시에는 이 노래들이 모이고 있어요!</b>
+        </h1>
         <div class="cards" id="cards-box">
+
         </div>
     </div>
 </div>
 
 </div>
+
+
 </body>
 </html>
