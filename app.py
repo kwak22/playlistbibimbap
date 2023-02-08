@@ -71,27 +71,31 @@ def playlist_get():
 @app.route("/playlist", methods=["POST"])
 def selected_track_post():
     selected_track_receive = request.form['select_track']
-
     selected_artists_receive = request.form['select_artists']
-    print("selected_track_receive:", selected_track_receive)
-    selected_track_data = db.search_results.find({"track": selected_track_receive, "artists": selected_artists_receive})
-    track_count = 0
 
-    for track_data in selected_track_data:
-        track_count += 1
-        selected_track = {
-            'track': track_data['track'],
-            'artists': track_data['artists'],
-            'image': track_data['image'],
-            'url': track_data['url'],
-            'hour': track_data['hour'],
-            'count': track_count,
-            'timestamp': track_data['timestamp']
-        }
-        db.playlist.insert_one(selected_track)
-        print("selected_track:", selected_track)
+    existing_track = db.playlist.find_one({"track": selected_track_receive, "artists": selected_artists_receive})
+    if existing_track:
+        db.playlist.update_one({"track": selected_track_receive, "artists": selected_artists_receive},
+                               {"$inc": {"count": 1}})
+    else:
+        selected_track_data = db.search_results.find({"track": selected_track_receive, "artists": selected_artists_receive})
+        track_count = 0
+
+        for track_data in selected_track_data:
+            track_count += 1
+            selected_track = {
+                'track': track_data['track'],
+                'artists': track_data['artists'],
+                'image': track_data['image'],
+                'url': track_data['url'],
+                'hour': track_data['hour'],
+                'count': track_count,
+                'timestamp': track_data['timestamp']
+            }
+            db.playlist.insert_one(selected_track)
 
     return 'OK'
+
 
 
 @app.route("/playlist", methods=["GET"])
