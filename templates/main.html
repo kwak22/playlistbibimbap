@@ -514,7 +514,9 @@
                 url: '/playlist',
                 data: {},
                 success: function (response) {
-                    let selectedTracks = response.selected_track.forEach(function (selected_track) {
+                    let selectedTracks = response.selected_track;
+                    selectedTracks.sort((a, b) => b.timestamp - a.timestamp);
+                    selectedTracks.forEach(function (selected_track) {
                         let selected_trackList = `<div class="col">
                             <div class="cards" id="songs_time">
                                 <div classe="card">
@@ -541,7 +543,7 @@
                                 </div>
                             </div>`
 
-                        $('#cards-box').prepend(selected_trackList)
+                        $('#cards-box').append(selected_trackList)
                     });
                 }
             })
